@@ -36,14 +36,32 @@ public class UDPClientSendMessage
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, serverPort);
                 socket.send(sendPacket);
                 System.out.println("Отправлено значение: " + message);
+
+                // Устанавливаем таймаут в 500 миллисекунд
+                socket.setSoTimeout(500);
+
+                // Принимаем ответ от сервера
+                byte[] receiveData = new byte[1024];
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                try
+                {
+                    socket.receive(receivePacket);
+                    String response = new String(receivePacket.getData(), 0, receivePacket.getLength());
+                    System.out.println("Ответ от сервера: " + response);
+                }
+                catch (SocketTimeoutException e)
+                {
+                    System.out.println("Ответ от сервера не получен в течение 500 миллисекунд.");
+                    continue; // Продолжаем выполнение цикла while после исключения
+                }
             }
 
-            System.out.println("Удалось подключиться к серверу.");
+            System.out.println("Отправка завершена.");
         }
         catch (Exception e)
         {
             e.printStackTrace();
-            System.out.println("Не удалось подключиться к серверу.");
+            System.out.println("Ошибка при отправке данных.");
         }
         finally
         {
