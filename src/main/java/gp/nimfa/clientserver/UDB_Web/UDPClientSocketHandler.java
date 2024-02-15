@@ -1,8 +1,12 @@
 package gp.nimfa.clientserver.UDB_Web;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+
 import java.io.*;
 import java.net.*;
 
+@Component
 public class UDPClientSocketHandler
 {
 

@@ -10,7 +10,6 @@ import java.io.IOException;
 @Controller
 public class ConnectionController
 {
-
     private final UDPClientSocketHandler clientSocketHandler = new UDPClientSocketHandler();
 
     @GetMapping("/")
@@ -46,7 +45,7 @@ public class ConnectionController
         try
         {
             clientSocketHandler.sendData(data);
-            return "redirect:/receiveData";
+            return "redirect:/receivedData";
         }
         catch (IOException e)
         {
@@ -62,5 +61,11 @@ public class ConnectionController
         return "redirect:/";
     }
 
+//    @GetMapping("/receivedData")
+//    public String receiveData(Model model)
+//    {
+//        return "receivedData";
+//    }
 }
+
 
