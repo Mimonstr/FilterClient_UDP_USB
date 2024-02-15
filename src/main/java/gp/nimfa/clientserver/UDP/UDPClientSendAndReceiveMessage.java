@@ -3,7 +3,7 @@ package gp.nimfa.clientserver.UDP;
 import java.net.*;
 import java.util.Scanner;
 
-public class UDPClientSendMessage
+public class UDPClientSendAndReceiveMessage
 {
     public static void main(String[] args)
     {
