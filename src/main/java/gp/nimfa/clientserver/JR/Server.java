@@ -1,5 +1,6 @@
 package gp.nimfa.clientserver.JR;
 
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -22,7 +23,8 @@ public class Server
         {
             try
             {
-                server = new ServerSocket(4004); // серверсокет прослушивает порт 4004
+                //server = new ServerSocket(4004); // серверсокет прослушивает порт 4004
+                server = new ServerSocket(10001);
                 System.out.println("Сервер запущен!"); // хорошо бы серверу
                 //   объявить о своем запуске
                 clientSocket = server.accept(); // accept() будет ждать пока

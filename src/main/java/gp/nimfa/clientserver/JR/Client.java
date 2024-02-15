@@ -1,6 +1,7 @@
 package gp.nimfa.clientserver.JR;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 
 public class Client
@@ -19,7 +20,8 @@ public class Client
             try
             {
                 // адрес - локальный хост, порт - 4004, такой же как у сервера
-                clientSocket = new Socket("localhost", 4004); // этой строкой мы запрашиваем
+                //clientSocket = new Socket("localhost", 4004); // этой строкой мы запрашиваем
+                clientSocket = new Socket(InetAddress.getByName("192.168.0.103"), 10001); // этой строкой мы запрашиваем
                 //  у сервера доступ на соединение
                 reader = new BufferedReader(new InputStreamReader(System.in));
                 // читать соообщения с сервера
