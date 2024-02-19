@@ -6,11 +6,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.SocketException;
 
 @Controller
 public class ConnectionController
 {
     private final UDPClientSocketHandler clientSocketHandler = new UDPClientSocketHandler();
+
 
     @GetMapping("/")
     public String index()

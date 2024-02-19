@@ -6,7 +6,7 @@
 </head>
 <body>
 <h2>Enter Server IP Address and Port</h2>
-<form action="/connect" method="post">
+<form action="/connect" method="post" th:object = "${UDPClientSocketHandler}">
     <input type="text" name="ipAddress" placeholder="Server IP Address"><br>
     <input type="text" name="port" placeholder="Server Port"><br>
     <input type="submit" value="Connect">

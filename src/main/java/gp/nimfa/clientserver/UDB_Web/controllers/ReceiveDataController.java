@@ -6,33 +6,38 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.SocketException;
 
 @Controller
 public class ReceiveDataController
 {
     private final UDPClientSocketHandler clientSocketHandler = new UDPClientSocketHandler();
 
+
+    //Так работает!!!
+//    @GetMapping("/receivedData")
+//    public String receiveData(Model model) throws IOException
+//    {
+//        return "receivedData";
+//    }
+
     @GetMapping("/receivedData")
     public String receiveData(Model model)
     {
-        return "receivedData";
+        try
+        {
+            String receivedData = clientSocketHandler.receiveData();
+            model.addAttribute("receivedData", receivedData);
+            return "receivedData";
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return "error";
+        }
     }
 
-//    @GetMapping("/receivedData")
-//    public String receiveData(Model model)
-//    {
-//        try
-//        {
-//            String receivedData = clientSocketHandler.receiveData();
-//            model.addAttribute("receivedData", receivedData);
-//            return "receivedData";
-//        }
-//        catch (IOException e)
-//        {
-//            e.printStackTrace();
-//            return "error";
-//        }
-//    }
+
 }
 
 //import gp.nimfa.clientserver.UDB_Web.UDPClientSocketHandler;
