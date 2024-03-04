@@ -9,16 +9,32 @@ import java.net.*;
 public class UDPClientSocketHandler
 {
 
-    private DatagramSocket socket;
+    //private DatagramSocket socket;
+    private static DatagramSocket socket;
+
+    static
+    {
+        try
+        {
+            socket = new DatagramSocket();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
     private InetAddress serverAddress;
     private int serverPort;
 
 
     public void connect(String ipAddress, int port) throws IOException
     {
-        socket = new DatagramSocket();
+        //socket = new DatagramSocket(port);
+        //socket = new DatagramSocket();
         serverAddress = InetAddress.getByName(ipAddress);
         serverPort = port;
+        //socket = new DatagramSocket(port,serverAddress);
     }
 
     public void disconnect()
@@ -47,7 +63,7 @@ public class UDPClientSocketHandler
     //Попытка 1:
     public String receiveData() throws IOException
     {
-        socket = new DatagramSocket();//Зачем???
+        //socket = new DatagramSocket();//Зачем???
         socket.setSoTimeout(500);
         byte[] receiveData = new byte[1024];
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length, serverAddress, serverPort);
