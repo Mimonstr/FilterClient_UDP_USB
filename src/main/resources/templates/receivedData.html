@@ -3,11 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <title>Received Data</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .response-container {
+            width: 300px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        p {
+            margin: 10px 0;
+        }
+        a {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            text-align: center;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        a:hover {
+            background-color: #45a049;
+        }
+    </style>
+
 </head>
 <body>
     <h2>Received Data from Server</h2>
-    Ответ сервера :
-    <p th:text="${receivedData}"></p>
+    <div class="response-container">
+        <p th:text="${receivedData}">Response from server goes here</p>
+    </div>
     <a href="/sendData">Send More Data</a>
 </body>
 </html>
