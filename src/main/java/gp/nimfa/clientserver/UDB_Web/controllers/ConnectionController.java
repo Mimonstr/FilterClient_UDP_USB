@@ -62,12 +62,6 @@ public class ConnectionController
         clientSocketHandler.disconnect();
         return "redirect:/";
     }
-
-//    @GetMapping("/receivedData")
-//    public String receiveData(Model model)
-//    {
-//        return "receivedData";
-//    }
 }
 
 

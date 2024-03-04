@@ -30,11 +30,9 @@ public class UDPClientSocketHandler
 
     public void connect(String ipAddress, int port) throws IOException
     {
-        //socket = new DatagramSocket(port);
         //socket = new DatagramSocket();
         serverAddress = InetAddress.getByName(ipAddress);
         serverPort = port;
-        //socket = new DatagramSocket(port,serverAddress);
     }
 
     public void disconnect()
@@ -52,18 +50,9 @@ public class UDPClientSocketHandler
         socket.send(sendPacket);
     }
 
-//    public String receiveData() throws IOException
-//    {
-//        byte[] receiveData = new byte[1024];
-//        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-//        socket.receive(receivePacket);
-//        return new String(receivePacket.getData(), 0, receivePacket.getLength());
-//    }
-
     //Попытка 1:
     public String receiveData() throws IOException
     {
-        //socket = new DatagramSocket();//Зачем???
         socket.setSoTimeout(500);
         byte[] receiveData = new byte[1024];
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length, serverAddress, serverPort);
@@ -72,11 +61,9 @@ public class UDPClientSocketHandler
         {
             socket.receive(receivePacket);
             response = new String(receivePacket.getData(), 0, receivePacket.getLength());
-            System.out.println("Ответ от сервера: " + response);
         }
         catch (SocketTimeoutException e)
         {
-            System.out.println("Ответ от сервера не получен в течение 500 миллисекунд.");
             return response;
         }
         return response;
