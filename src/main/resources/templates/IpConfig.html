@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IP Configuration</title>
+  <style>
+    body
+    {
+      font-family: Arial, sans-serif;
+      margin: 50px;
+    }
+    h1
+    {
+      color: #333;
+    }
+    .info
+    {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .label
+    {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<h1>IP Configuration</h1>
+<div class="info">
+  <p><span class="label">IP Address:</span> <span th:text="${ipConfigData.ipAddress}"></span></p>
+  <p><span class="label">Subnet Mask:</span> <span th:text="${ipConfigData.subnetMask}"></span></p>
+</div>
+</body>
+</html>
