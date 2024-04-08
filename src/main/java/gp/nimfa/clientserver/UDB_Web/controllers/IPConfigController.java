@@ -4,7 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,7 +24,8 @@ public class IPConfigController
             Process process = Runtime.getRuntime().exec("ipconfig /all");
 
             // Получаем вывод команды
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            //BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "Cp866"));
             StringBuilder output = new StringBuilder();
             String line;
 
@@ -39,27 +39,27 @@ public class IPConfigController
             reader.close();
 
             // Используем регулярные выражения для поиска IP-адреса и маски подсети
-            //Pattern ipPattern = Pattern.compile("IPv4 Address\\.+: (.+)");
-            //Pattern ipPattern = Pattern.compile("IPv4 Address[\\. ]+: ([0-9\\.]+)");
-            //Pattern maskPattern = Pattern.compile("Subnet Mask\\.+: (.+)");
-            //Pattern maskPattern = Pattern.compile("Subnet Mask[\\. ]+: ([0-9\\.]+)");
-
+            //Pattern ipPattern = Pattern.compile("IPv4[^0-9]*([0-9\\.]+)");
+            //Pattern maskPattern = Pattern.compile("Маска подсети[^0-9]*([0-9\\.]+)");
             Pattern ipPattern = Pattern.compile("IPv4[^0-9]*([0-9\\.]+)");
-            Pattern maskPattern = Pattern.compile("Маска подсети . . . . . . . . . . . . : ([0-9\\.]+)");
+            Pattern maskPattern = Pattern.compile("Маска подсети[\\. ]+: ([0-9\\.]+)");
+            Pattern descriptionPattern = Pattern.compile("Описание[\\. ]+: (.+)");
+            Pattern macAddressPattern = Pattern.compile("Физический адрес[\\. ]+: (.+)");
 
             Matcher ipMatcher = ipPattern.matcher(output.toString());
             Matcher maskMatcher = maskPattern.matcher(output.toString());
+            Matcher descriptionMatcher = descriptionPattern.matcher(output.toString());
+            Matcher macAddressMatcher = macAddressPattern.matcher(output.toString());
 
             String ipAddress = ipMatcher.find() ? ipMatcher.group(1) : "IP-адрес не найден";
             String subnetMask = maskMatcher.find() ? maskMatcher.group(1) : "Маска подсети не найдена";
+            String description = descriptionMatcher.find() ? descriptionMatcher.group(1) : "Описание не найдено";
+            String macAddress = macAddressMatcher.find() ? macAddressMatcher.group(1) : "Описание не найдено";
 
             // Создаем объект модели и передаем его в представление
-            IPConfigData ipConfigData = new IPConfigData(ipAddress, subnetMask);
+            IPConfigData ipConfigData = new IPConfigData(ipAddress, subnetMask, description, macAddress);
             model.addAttribute("ipConfigData", ipConfigData);
 
-            // Передаем результаты в модель
-            // model.addAttribute("ipAddress", ipAddress);
-            //model.addAttribute("subnetMask", subnetMask);
 
             // Возвращаем имя представления (HTML-страницы)
             return "IpConfig";
@@ -67,9 +67,9 @@ public class IPConfigController
         catch (IOException e)
         {
             e.printStackTrace();
-            model.addAttribute("ipAddress", "Ошибка выполнения команды ipconfig /all");
-            model.addAttribute("subnetMask", "");
-            return "index";
+            IPConfigData ipConfigData = new IPConfigData("Ошибка выполнения команды ipconfig /all", "", "", "");
+            model.addAttribute("ipConfigData", ipConfigData);
+            return "IpConfig";
         }
     }
 }

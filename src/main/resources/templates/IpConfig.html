@@ -19,6 +19,8 @@
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
+      display: inline-block;
+      width: 30%;
     }
     .label
     {
@@ -27,10 +29,12 @@
   </style>
 </head>
 <body>
-<h1>IP Configuration</h1>
+<h1>My PC IP Configuration</h1>
 <div class="info">
   <p><span class="label">IP Address:</span> <span th:text="${ipConfigData.ipAddress}"></span></p>
   <p><span class="label">Subnet Mask:</span> <span th:text="${ipConfigData.subnetMask}"></span></p>
+  <p><span class="label">Description:</span> <span th:text="${ipConfigData.description}"></span></p>
+  <p><span class="label">Mac Адрес:</span> <span th:text="${ipConfigData.macAddress}"></span></p>
 </div>
 </body>
 </html>

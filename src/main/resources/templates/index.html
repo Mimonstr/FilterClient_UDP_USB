@@ -5,26 +5,51 @@
     <title>Connection Setup</title>
 
     <style>
-        body {
+        body
+        {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
-            padding: 0;
+            padding: 30px;
         }
-        h2 {
+        .left
+        {
+            float: left;
+        }
+        .right
+        {
+            float: right;
+            margin-right: 200px;
+        }
+        h2
+        {
             color: #333;
             text-align: center;
             margin-top: 50px;
         }
-        form {
+
+        form
+        {
             width: 300px;
-            margin: 0 auto;
             background-color: #fff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            float: right;
+            margin-right: 300px;
         }
-        input[type="text"], input[type="submit"] {
+
+        .info
+        {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: inline-block;
+            width: 30%;
+        }
+        input[type="text"], input[type="submit"]
+        {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
@@ -33,15 +58,18 @@
             box-sizing: border-box;
             font-size: 16px;
         }
-        input[type="submit"] {
+        input[type="submit"]
+        {
             background-color: #4CAF50;
             color: white;
             cursor: pointer;
         }
-        input[type="submit"]:hover {
+        input[type="submit"]:hover
+        {
             background-color: #45a049;
         }
-        .server-image {
+        .server-image
+        {
             display: block;
             margin: 20px auto;
             width: 450px;
@@ -51,13 +79,25 @@
 
 </head>
 <body>
-<h2>Enter Server IP Address and Port</h2>
+<!--<h2>Enter Server IP Address and Port</h2>-->
+<h1>
+        <span class="left">My PC IP Configuration</span>
+        <span class="right">Enter Server IP Address and Port</span>
+</h1>
+<br><br><br>
+<div class="info">
+    <p><span class="label">IP Address:</span> <span th:text="${ipConfigData.ipAddress}"></span></p>
+    <p><span class="label">Subnet Mask:</span> <span th:text="${ipConfigData.subnetMask}"></span></p>
+    <p><span class="label">Description:</span> <span th:text="${ipConfigData.description}"></span></p>
+    <p><span class="label">Mac Address:</span> <span th:text="${ipConfigData.macAddress}"></span></p>
+</div>
 <form action="/connect" method="post" th:object = "${UDPClientSocketHandler}">
     <input type="text" name="ipAddress" placeholder="Server IP Address"><br>
     <input type="text" name="port" placeholder="Server Port"><br>
     <input type="submit" value="Connect">
 </form>
 <!--    <img src="server.png" alt="Server" class="server-image">-->
-    <img src="https://yastatic.net/naydex/yandex-search/Na1u6i652/d4fcb4msTVp9/hyh73Bf_QkxYlHqX5LJ3a3t1mtPvN_1Gsyuz0V5XvZhrg6TG3SReGUbpxZvlK7HvnPjjrP5toV5F_M1Nbfh-SJPsv7gGKhcYOXE6F9TiVr6vRIsWT3Is4pbrIuSuogjIHXBjgf9Xmf8xftJ8JIvhSon8YjhaG2fg" alt="Server" class="server-image">
+<!--    <img src="https://yastatic.net/naydex/yandex-search/Na1u6i652/d4fcb4msTVp9/hyh73Bf_QkxYlHqX5LJ3a3t1mtPvN_1Gsyuz0V5XvZhrg6TG3SReGUbpxZvlK7HvnPjjrP5toV5F_M1Nbfh-SJPsv7gGKhcYOXE6F9TiVr6vRIsWT3Is4pbrIuSuogjIHXBjgf9Xmf8xftJ8JIvhSon8YjhaG2fg" alt="Server" class="server-image">-->
 </body>
 </html>
+
