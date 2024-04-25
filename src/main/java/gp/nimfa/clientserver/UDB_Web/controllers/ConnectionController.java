@@ -94,20 +94,43 @@ public class ConnectionController
         return "sendData";
     }
 
+//    @PostMapping("/sendData")
+//    public String sendData(@RequestParam("data") String data)
+//    {
+//        try
+//        {
+//            clientSocketHandler.sendData(data);
+//            return "redirect:/receivedData";
+//        }
+//        catch (IOException e)
+//        {
+//            e.printStackTrace();
+//            return "error";
+//        }
+//    }
+
+
     @PostMapping("/sendData")
-    public String sendData(@RequestParam("data") String data)
+    public String sendData(@RequestParam("leftCutoff") float leftCutoff,
+                           @RequestParam("rightCutoff") float rightCutoff)
     {
         try
         {
-            clientSocketHandler.sendData(data);
+            // Calculate center frequency
+            float centerFrequency = (leftCutoff + rightCutoff) / 2;
+            System.out.println(centerFrequency);
+            // Process the data or send it to the clientSocketHandler
+            // clientSocketHandler.sendData(data);
+
             return "redirect:/receivedData";
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             e.printStackTrace();
             return "error";
         }
     }
+
 
     @GetMapping("/disconnect")
     public String disconnect()
