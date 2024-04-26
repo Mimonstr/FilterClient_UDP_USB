@@ -161,6 +161,12 @@ public class ConnectionController
         clientSocketHandler.disconnect();
         return "redirect:/";
     }
+
+//    @GetMapping("/error")
+//    public String error()
+//    {
+//        return "redirect:/";
+//    }
 }
 
 

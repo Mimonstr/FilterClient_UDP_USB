@@ -122,10 +122,10 @@
 <h2>Filter Settings</h2>
 <form action="/sendData" method="post">
     <label for="leftCutoff" style="float: left; width: 30%">Left Cutoff Frequency (MHz):</label>
-    <input type="number" id="leftCutoff" name="leftCutoff" placeholder="Enter left cutoff frequency in MHz" min="1050" max="1500" style="float: left">
+    <input type="number" id="leftCutoff" name="leftCutoff" placeholder="Enter left cutoff frequency in MHz" min="1050" max="1500" style="float: left" required>
     <br><br><br>
     <label for="rightCutoff" style="float: left; width: 30%">Right Cutoff Frequency (MHz):</label>
-    <input type="number" id="rightCutoff" name="rightCutoff" placeholder="Enter right cutoff frequency in MHz" min="1400" max="1850" style="float: right">
+    <input type="number" id="rightCutoff" name="rightCutoff" placeholder="Enter right cutoff frequency in MHz" min="1400" max="1850" style="float: right" required>
     <br><br><br>
     <div id="centerFrequency" style="text-align: center"></div> <!-- Placeholder for center frequency display -->
     <br>
