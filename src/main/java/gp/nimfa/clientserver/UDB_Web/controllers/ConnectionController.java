@@ -111,16 +111,16 @@ public class ConnectionController
 
 
     @PostMapping("/sendData")
-    public String sendData(@RequestParam("leftCutoff") float leftCutoff,
-                           @RequestParam("rightCutoff") float rightCutoff)
+    public String sendData(@RequestParam("leftCutoff") int leftCutoff,
+                           @RequestParam("rightCutoff") int rightCutoff)
     {
         try
         {
             // Calculate center frequency
             float centerFrequency = (leftCutoff + rightCutoff) / 2;
-            System.out.println(centerFrequency);
+            //System.out.println(centerFrequency);
             // Process the data or send it to the clientSocketHandler
-            // clientSocketHandler.sendData(data);
+             clientSocketHandler.sendData(leftCutoff, rightCutoff);
 
             return "redirect:/receivedData";
         }
