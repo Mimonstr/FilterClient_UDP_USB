@@ -132,6 +132,29 @@ public class ConnectionController
     }
 
 
+    @GetMapping("/debug")
+    public String debug()
+    {
+        return "debug";
+    }
+    @PostMapping("/debug")
+    public String sendVoltages(@RequestParam("dacA") int dacA,
+                               @RequestParam("dacB") int dacB,
+                               @RequestParam("dacC") int dacC,
+                               @RequestParam("dacD") int dacD)
+    {
+        try
+        {
+            clientSocketHandler.sendData(dacA, dacB, dacC, dacD);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return "error";
+        }
+
+        return "redirect:/receivedData";
+    }
     @GetMapping("/disconnect")
     public String disconnect()
     {

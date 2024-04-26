@@ -49,10 +49,18 @@ public class UDPClientSocketHandler
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, serverPort);
         socket.send(sendPacket);
     }
+    //Отправка частот
     public void sendData(int leftFreq, int rightFreq) throws IOException
     {
         byte[] sendData = messagePackaging(leftFreq, rightFreq);
-        //byte[] sendData = messageVolt(leftFreq, rightFreq, leftFreq, rightFreq);
+        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, serverPort);
+        socket.send(sendPacket);
+    }
+
+    //Отправка напряжений на каждый канал
+    public void sendData(int dacA, int dacB, int dacC, int dacD) throws IOException
+    {
+        byte[] sendData = messageVolt(dacA, dacB, dacC, dacD);
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, serverPort);
         socket.send(sendPacket);
     }

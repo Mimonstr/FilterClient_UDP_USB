@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Filter Settings</title>
+
+    <style>
+        body
+        {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h2
+        {
+            color: #333;
+            text-align: center;
+            margin-top: 50px;
+        }
+        input[type="number"],
+        input[type="submit"],
+        a {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+            background-color: #4CAF50;
+            color: black;
+            cursor: pointer;
+        }
+        input[type="number"] {
+            margin-bottom: 20px;
+            background-color: white;
+            width: 30%;
+        }
+        input[type="submit"]:hover,
+        a:hover
+        {
+            background-color: #45a049;
+        }
+        a
+        {
+            background-color: #f44336;
+        }
+        input[type="submit"]
+        {
+            background-color: #4CAF50; /* Green color for the "Send" button */
+        }
+        .channel-inputs
+        {
+            width: 50%;
+            margin: 0 auto;
+        }
+        .channel-input
+        {
+            margin-bottom: 10px;
+        }
+    </style>
+
+</head>
+<body>
+<h2>Filter Settings</h2>
+<form action="/debug" method="post">
+<div class="channel-inputs">
+    <h3>Input Voltages for Each Channel</h3>
+    <div class="channel-input">
+        <label for="dacA">DAC A (0-5000 mV):</label>
+        <input type="number" id="dacA" name="dacA" min="0" max="5000" step="1" required>
+    </div>
+    <div class="channel-input">
+        <label for="dacB">DAC B (0-5000 mV):</label>
+        <input type="number" id="dacB" name="dacB" min="0" max="5000" step="1" required>
+    </div>
+    <div class="channel-input">
+        <label for="dacC">DAC C (0-5000 mV):</label>
+        <input type="number" id="dacC" name="dacC" min="0" max="5000" step="1" required>
+    </div>
+    <div class="channel-input">
+        <label for="dacD">DAC D (0-5000 mV):</label>
+        <input type="number" id="dacD" name="dacD" min="0" max="5000" step="1" required>
+    </div>
+    <input type="submit" value="Send Voltages" style="width: 50%">
+</div>
+</form>
+
+</body>
+</html>
