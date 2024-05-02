@@ -2,6 +2,7 @@ package gp.nimfa.clientserver.UDB_Web.controllers;
 
 import gp.nimfa.clientserver.UDB_Web.UDPClientSocketHandler;
 import gp.nimfa.clientserver.UDB_Web.model.IPConfigData;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -74,12 +75,19 @@ public class ConnectionController
     }
 
     @PostMapping("/connect")
-    public String connect(@RequestParam("ipAddress") String ipAddress, @RequestParam("port") int port)
+    public String connect(@RequestParam("ipAddress") String ipAddress, @RequestParam("port") int port, HttpSession session)
     {
         try
         {
-            clientSocketHandler.connect(ipAddress, port);
-            return "redirect:/sendData";
+            //System.out.println(ipAddress);
+            if(clientSocketHandler.connect(ipAddress, port))
+            {
+                //clientSocketHandler.connect(ipAddress, port);
+                session.setAttribute("ipAddress", ipAddress);
+                session.setAttribute("port", port);
+                return "redirect:/sendData";
+            }
+            else return "error";
         }
         catch (IOException e)
         {
@@ -94,35 +102,23 @@ public class ConnectionController
         return "sendData";
     }
 
-//    @PostMapping("/sendData")
-//    public String sendData(@RequestParam("data") String data)
-//    {
-//        try
-//        {
-//            clientSocketHandler.sendData(data);
-//            return "redirect:/receivedData";
-//        }
-//        catch (IOException e)
-//        {
-//            e.printStackTrace();
-//            return "error";
-//        }
-//    }
-
-
     @PostMapping("/sendData")
     public String sendData(@RequestParam("leftCutoff") int leftCutoff,
-                           @RequestParam("rightCutoff") int rightCutoff)
+                           @RequestParam("rightCutoff") int rightCutoff,
+                           HttpSession session)
     {
         try
         {
-            // Calculate center frequency
-            float centerFrequency = (leftCutoff + rightCutoff) / 2;
-            //System.out.println(centerFrequency);
             // Process the data or send it to the clientSocketHandler
-             clientSocketHandler.sendData(leftCutoff, rightCutoff);
+            String ipAddress = (String) session.getAttribute("ipAddress");
 
-            return "redirect:/receivedData";
+            //int port = (Integer) session.getAttribute("port");
+            if(clientSocketHandler.isConnected(ipAddress))
+            {
+                clientSocketHandler.sendData(leftCutoff, rightCutoff);
+                return "redirect:/receivedData";
+            }
+            else return "error";
         }
         catch (Exception e)
         {
@@ -141,11 +137,18 @@ public class ConnectionController
     public String sendVoltages(@RequestParam("dacA") int dacA,
                                @RequestParam("dacB") int dacB,
                                @RequestParam("dacC") int dacC,
-                               @RequestParam("dacD") int dacD)
+                               @RequestParam("dacD") int dacD,
+                               HttpSession session)
     {
         try
         {
-            clientSocketHandler.sendData(dacA, dacB, dacC, dacD);
+            String ipAddress = (String) session.getAttribute("ipAddress");
+            if(clientSocketHandler.isConnected(ipAddress))
+            {
+                clientSocketHandler.sendData(dacA, dacB, dacC, dacD);
+                return "redirect:/receivedData";
+            }
+            else return "error";
         }
         catch (Exception e)
         {
@@ -153,7 +156,7 @@ public class ConnectionController
             return "error";
         }
 
-        return "redirect:/receivedData";
+        //return "redirect:/receivedData";
     }
     @GetMapping("/disconnect")
     public String disconnect()

@@ -9,7 +9,6 @@ import java.net.*;
 public class UDPClientSocketHandler
 {
 
-    //private DatagramSocket socket;
     private static DatagramSocket socket;
 
     static
@@ -26,21 +25,56 @@ public class UDPClientSocketHandler
 
     private InetAddress serverAddress;
     private int serverPort;
+    private boolean isConnected;
 
-
-    public void connect(String ipAddress, int port) throws IOException
+    public boolean ping(String ipAddress)
     {
-        //socket = new DatagramSocket();
-        serverAddress = InetAddress.getByName(ipAddress);
-        serverPort = port;
+        try
+        {
+            InetAddress address = InetAddress.getByName(ipAddress);
+            return address.isReachable(2000); // 5000 мс таймаут
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean connect(String ipAddress, int port) throws IOException
+    {
+        //Нужно добавить!!!! После нажатия кнопки дисконект сокет закрывается
+        // и не открывается после нажатия на кнопку конект
+        socket = new DatagramSocket();
+        if(ping(ipAddress))
+        {
+            serverAddress = InetAddress.getByName(ipAddress);
+            serverPort = port;
+            //this.ipAddress = ipAddress;
+            isConnected = true;
+            return true;
+        }
+        else
+        {
+            isConnected = false;
+            return false;
+        }
+
     }
 
     public void disconnect()
     {
         if (socket != null)
         {
-            socket.close();
+            socket.close();//Могу не закрывать
+            //Сокет можно сразу открыть
+            isConnected = false;
         }
+    }
+
+    public boolean isConnected(String ipAddress)
+    {
+        return ping(ipAddress);
     }
 
     public void sendData(String data) throws IOException
@@ -52,17 +86,31 @@ public class UDPClientSocketHandler
     //Отправка частот
     public void sendData(int leftFreq, int rightFreq) throws IOException
     {
-        byte[] sendData = messagePackaging(leftFreq, rightFreq);
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, serverPort);
-        socket.send(sendPacket);
+        if (socket != null && isConnected)
+        {
+            byte[] sendData = messagePackaging(leftFreq, rightFreq);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, serverPort);
+            socket.send(sendPacket);
+        }
+        else
+        {
+            System.out.println("Error");
+        }
     }
 
     //Отправка напряжений на каждый канал
     public void sendData(int dacA, int dacB, int dacC, int dacD) throws IOException
     {
-        byte[] sendData = messageVolt(dacA, dacB, dacC, dacD);
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, serverPort);
-        socket.send(sendPacket);
+        if (socket != null && isConnected)
+        {
+            byte[] sendData = messageVolt(dacA, dacB, dacC, dacD);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, serverPort);
+            socket.send(sendPacket);
+        }
+        else
+        {
+            System.out.println("Error");
+        }
     }
 
     //Попытка 1:
@@ -102,7 +150,7 @@ public class UDPClientSocketHandler
         double b1 = 0.003807;
         double c1 = -1.811e+06;
         double d1 = -0.01376;
-        //double U1_pol = Math.round(a1 * Math.exp(b1 * leftFreq) + c1 * Math.exp(d1 * leftFreq), 4);
+
         double U1_pol = a1 * Math.exp(b1 * leftFreq) + c1 * Math.exp(d1 * leftFreq);
         U1_pol = Math.round(U1_pol * 10000.0) / 10000.0;
         System.out.println("A = " + U1_pol);
@@ -111,7 +159,7 @@ public class UDPClientSocketHandler
         double b2 = 0.003645;
         double c2 = -1.302e+08;
         double d2 = -0.01334;
-        //double U2_pol = Math.round(a2 * Math.exp(b2 * rightFreq) + c2 * Math.exp(d2 * rightFreq), 4);
+
         double U2_pol = a2 * Math.exp(b2 * rightFreq) + c2 * Math.exp(d2 * rightFreq);
         U2_pol = Math.round(U2_pol * 10000.0) / 10000.0;
         System.out.println("B = " + U2_pol);
