@@ -4,6 +4,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 @Component
 public class UDPClientSocketHandler
@@ -273,6 +276,94 @@ public class UDPClientSocketHandler
            };
 
         return dataWrite;
+    }
+
+    //Получаем ip-адреса
+    public static List<String> getAllIPAddresses()
+    {
+        List<String> ipAddresses = new ArrayList<>();
+        try
+        {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements())
+            {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                if (networkInterface.isUp() && !networkInterface.isLoopback())
+                {
+                    Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                    while (addresses.hasMoreElements())
+                    {
+                        InetAddress address = addresses.nextElement();
+                        if (address instanceof Inet4Address)
+                        {
+                            ipAddresses.add(address.getHostAddress());
+                        }
+                    }
+                }
+            }
+        } catch (SocketException e)
+        {
+            e.printStackTrace();
+        }
+        return ipAddresses;
+    }
+
+    //Получаем список всех mac-адресов
+    public static List<String> getAllMACAddresses()
+    {
+        List<String> macAddresses = new ArrayList<>();
+        try
+        {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements())
+            {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                byte[] mac = networkInterface.getHardwareAddress();
+                if (mac != null)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < mac.length; i++)
+                    {
+                        sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+                    }
+                    macAddresses.add(sb.toString());
+                }
+            }
+        }
+        catch (SocketException e)
+        {
+            e.printStackTrace();
+        }
+        return macAddresses;
+    }
+
+    public static List<String> getAllMACDescriptions()
+    {
+        List<String> descriptions = new ArrayList<>();
+        try
+        {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements())
+            {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                byte[] mac = networkInterface.getHardwareAddress();
+                if (mac != null)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < mac.length; i++)
+                    {
+                        sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+                    }
+                    String description = networkInterface.getDisplayName(); // Описание интерфейса
+                    descriptions.add(description);
+                }
+            }
+        }
+        catch (SocketException e)
+        {
+            e.printStackTrace();
+        }
+        return descriptions;
     }
 
     public DatagramSocket getSocket()
