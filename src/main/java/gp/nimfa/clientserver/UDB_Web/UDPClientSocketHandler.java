@@ -44,7 +44,7 @@ public class UDPClientSocketHandler
     public boolean connect(String ipAddress, int port) throws IOException
     {
         //Нужно добавить!!!! После нажатия кнопки дисконект сокет закрывается
-        // и не открывается после нажатия на кнопку конект
+        // и не открывается после нажатия на кнопку конект(исправлено)
         socket = new DatagramSocket();
         if(ping(ipAddress))
         {
@@ -67,7 +67,7 @@ public class UDPClientSocketHandler
         if (socket != null)
         {
             socket.close();//Могу не закрывать
-            //Сокет можно сразу открыть
+            //Сокет можно сразу открыть(исправлено)
             isConnected = false;
         }
     }

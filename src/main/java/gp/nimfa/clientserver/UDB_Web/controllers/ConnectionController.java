@@ -71,7 +71,6 @@ public class ConnectionController
             model.addAttribute("subnetMask", "");
             return "index";
         }
-        //return "index";
     }
 
     @PostMapping("/connect")
@@ -79,10 +78,8 @@ public class ConnectionController
     {
         try
         {
-            //System.out.println(ipAddress);
             if(clientSocketHandler.connect(ipAddress, port))
             {
-                //clientSocketHandler.connect(ipAddress, port);
                 session.setAttribute("ipAddress", ipAddress);
                 session.setAttribute("port", port);
                 return "redirect:/sendData";
@@ -112,7 +109,6 @@ public class ConnectionController
             // Process the data or send it to the clientSocketHandler
             String ipAddress = (String) session.getAttribute("ipAddress");
 
-            //int port = (Integer) session.getAttribute("port");
             if(clientSocketHandler.isConnected(ipAddress))
             {
                 clientSocketHandler.sendData(leftCutoff, rightCutoff);
@@ -155,8 +151,6 @@ public class ConnectionController
             e.printStackTrace();
             return "error";
         }
-
-        //return "redirect:/receivedData";
     }
     @GetMapping("/disconnect")
     public String disconnect()
@@ -164,12 +158,6 @@ public class ConnectionController
         clientSocketHandler.disconnect();
         return "redirect:/";
     }
-
-//    @GetMapping("/error")
-//    public String error()
-//    {
-//        return "redirect:/";
-//    }
 }
 
 
