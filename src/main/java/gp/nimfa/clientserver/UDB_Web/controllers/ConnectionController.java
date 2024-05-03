@@ -2,6 +2,7 @@ package gp.nimfa.clientserver.UDB_Web.controllers;
 
 import gp.nimfa.clientserver.UDB_Web.UDPClientSocketHandler;
 import gp.nimfa.clientserver.UDB_Web.model.IPConfigData;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -70,16 +71,20 @@ public class ConnectionController
             model.addAttribute("subnetMask", "");
             return "index";
         }
-        //return "index";
     }
 
     @PostMapping("/connect")
-    public String connect(@RequestParam("ipAddress") String ipAddress, @RequestParam("port") int port)
+    public String connect(@RequestParam("ipAddress") String ipAddress, @RequestParam("port") int port, HttpSession session)
     {
         try
         {
-            clientSocketHandler.connect(ipAddress, port);
-            return "redirect:/sendData";
+            if(clientSocketHandler.connect(ipAddress, port))
+            {
+                session.setAttribute("ipAddress", ipAddress);
+                session.setAttribute("port", port);
+                return "redirect:/sendData";
+            }
+            else return "error";
         }
         catch (IOException e)
         {
@@ -95,20 +100,58 @@ public class ConnectionController
     }
 
     @PostMapping("/sendData")
-    public String sendData(@RequestParam("data") String data)
+    public String sendData(@RequestParam("leftCutoff") int leftCutoff,
+                           @RequestParam("rightCutoff") int rightCutoff,
+                           HttpSession session)
     {
         try
         {
-            clientSocketHandler.sendData(data);
-            return "redirect:/receivedData";
+            // Process the data or send it to the clientSocketHandler
+            String ipAddress = (String) session.getAttribute("ipAddress");
+
+            if(clientSocketHandler.isConnected(ipAddress))
+            {
+                clientSocketHandler.sendData(leftCutoff, rightCutoff);
+                return "redirect:/receivedData";
+            }
+            else return "error";
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             e.printStackTrace();
             return "error";
         }
     }
 
+
+    @GetMapping("/debug")
+    public String debug()
+    {
+        return "debug";
+    }
+    @PostMapping("/debug")
+    public String sendVoltages(@RequestParam("dacA") int dacA,
+                               @RequestParam("dacB") int dacB,
+                               @RequestParam("dacC") int dacC,
+                               @RequestParam("dacD") int dacD,
+                               HttpSession session)
+    {
+        try
+        {
+            String ipAddress = (String) session.getAttribute("ipAddress");
+            if(clientSocketHandler.isConnected(ipAddress))
+            {
+                clientSocketHandler.sendData(dacA, dacB, dacC, dacD);
+                return "redirect:/receivedData";
+            }
+            else return "error";
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return "error";
+        }
+    }
     @GetMapping("/disconnect")
     public String disconnect()
     {
