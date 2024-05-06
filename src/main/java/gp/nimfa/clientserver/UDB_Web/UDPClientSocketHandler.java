@@ -7,6 +7,8 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class UDPClientSocketHandler
@@ -237,9 +239,6 @@ public class UDPClientSocketHandler
         byte daca_High = (byte) (dacaHigh & 0xFF);
         byte daca_Low = (byte) (dacaLow & 0xFF);
 
-        double U = 5 * (Voltage_DACA/Math.pow(2,12));
-        System.out.println(U);
-
         /*ChB*/
         int Voltage_DACB = dacB;
 
@@ -364,6 +363,36 @@ public class UDPClientSocketHandler
             e.printStackTrace();
         }
         return descriptions;
+    }
+
+    public static String loadIpAddress()
+    {
+        try (InputStream inputStream = UDPClientSocketHandler.class.getClassLoader().getResourceAsStream("config.ini");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream)))
+        {
+            String line;
+            String ipAddress = null;
+
+            // Чтение файла построчно
+            while ((line = reader.readLine()) != null)
+            {
+                // Поиск строки, содержащей IP-адрес
+                Pattern pattern = Pattern.compile("ip-адрес:\\s*(\\S+)");
+                Matcher matcher = pattern.matcher(line);
+                if (matcher.find())
+                {
+                    ipAddress = matcher.group(1);
+                    break; // Выходим из цикла, если нашли IP-адрес
+                }
+            }
+
+            return ipAddress;
+
+        }
+        catch (Exception e)
+        {
+            return "";
+        }
     }
 
     public DatagramSocket getSocket()

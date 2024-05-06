@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
@@ -15,6 +17,7 @@ public class ConnectionController
 {
     private final UDPClientSocketHandler clientSocketHandler = new UDPClientSocketHandler();
 
+    private static final String CONFIG_FILE_PATH = "src/main/resources/config.ini";
     @GetMapping("/")
     public String index(Model model)
     {
@@ -27,8 +30,26 @@ public class ConnectionController
         List<String> macDescriptions = UDPClientSocketHandler.getAllMACDescriptions();
         model.addAttribute("macDescriptions", macDescriptions);
 
+        String ipAddress = UDPClientSocketHandler.loadIpAddress();
+        model.addAttribute("ipAddress", ipAddress);
+
+
         // Возвращаем имя представления (HTML-страницы)
         return "index";
+    }
+
+    @PostMapping("/edit-config")
+    public String editConfig(@RequestParam("configFileContent") String newConfigContent)
+    {
+        try (FileWriter writer = new FileWriter(CONFIG_FILE_PATH))
+        {
+            writer.write(newConfigContent);
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+            // Обработка ошибки записи в файл
+        }
+        return "redirect:/";
     }
 
     @PostMapping("/connect")

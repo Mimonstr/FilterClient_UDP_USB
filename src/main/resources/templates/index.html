@@ -101,12 +101,27 @@
     </ul>
 </div>
 <form action="/connect" method="post" th:object = "${UDPClientSocketHandler}">
-    <input type="text" name="ipAddress" placeholder="Server IP Address" style="text-align: center" required pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$" title="Example Mask: 255.0.0.0  Diapason 0..255" oninput="checkIPAddress(this)"><br>
+    <input type="text" id="ipAddress" name="ipAddress" placeholder="Server IP Address" style="text-align: center" required
+           pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+           title="Example Mask: 255.0.0.0  Diapason 0..255"
+           oninput="checkIPAddress(this)"
+           th:value="${ipAddress}"><br>
+
     <input type="text" name="port" placeholder="Server Port" value="10001" readonly style="text-align: center"><br>
+
     <input type="submit" value="Connect">
+
+    <input type="button" value="Сохранить в файл" onclick="saveToFile()">
+
+    <input type="file" id="fileInput" style="display: none;"> <!-- Кнопка загрузки файла, скрытая -->
+    <button type="button" onclick="loadFromFile()">Загрузить из файла</button>
+
 </form>
 
+
+
 <script th:inline="javascript">
+
     var ipAddressList = [[${ipAddresses}]];
     function checkIPAddress(input)
     {
@@ -117,6 +132,48 @@
             input.value = "";
         }
     }
+
+    function saveToFile()
+    {
+        var ipAddress = document.getElementsByName("ipAddress")[0].value;
+        var filename = prompt("Введите имя файла:", "ip_address.txt"); // Запрашиваем имя файла у пользователя
+        if (filename === null) return; // Если пользователь отменил ввод, просто выходим из функции
+        var blob = new Blob([ipAddress], { type: "text/plain;charset=utf-8" });
+        if (window.navigator.msSaveOrOpenBlob)
+        {
+            window.navigator.msSaveOrOpenBlob(blob, filename);
+        }
+        else
+        {
+            var link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+    }
+
+
+
+    function loadFromFile()
+    {
+        const fileInput = document.getElementById('fileInput');
+        fileInput.addEventListener('change', function(event)
+        {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e)
+            {
+                const ipAddress = e.target.result.trim();
+                document.getElementById('ipAddress').value = ipAddress;
+            };
+
+            reader.readAsText(file);
+        });
+
+        fileInput.click(); // Вызов окна выбора файла
+    }
+
 </script>
 
 </body>
