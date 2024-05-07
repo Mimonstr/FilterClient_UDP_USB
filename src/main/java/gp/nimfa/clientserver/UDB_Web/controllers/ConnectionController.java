@@ -63,7 +63,7 @@ public class ConnectionController
                 session.setAttribute("port", port);
                 return "redirect:/sendData";
             }
-            else return "error";
+            else return "redirect:/";
         }
         catch (IOException e)
         {

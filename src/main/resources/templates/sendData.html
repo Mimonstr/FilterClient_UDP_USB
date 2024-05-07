@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Filter Settings</title>
+    <title>Настройки фильтра</title>
 
     <style>
         body {
@@ -68,6 +68,7 @@
             text-align: center;
             color: white;
             cursor: pointer;
+            font-family: "Times New Roman";
         }
         a
         {
@@ -119,13 +120,13 @@
 
 </head>
 <body>
-<h2>Filter Settings</h2>
+<h2>Настройки Фильтра</h2>
 <form action="/sendData" method="post">
-    <label for="leftCutoff" style="float: left; width: 30%">Left Cutoff Frequency (MHz):</label>
-    <input type="number" id="leftCutoff" name="leftCutoff" placeholder="Enter left cutoff frequency in MHz" min="1050" max="1500" style="float: left" required>
+    <label for="leftCutoff" style="float: left; width: 30%">Левая частота среза (МГц):</label>
+    <input type="number" id="leftCutoff" name="leftCutoff" placeholder="Введите левую частоту среза в МГц" min="570" max="800" style="float: left" required>
     <br><br><br>
-    <label for="rightCutoff" style="float: left; width: 30%">Right Cutoff Frequency (MHz):</label>
-    <input type="number" id="rightCutoff" name="rightCutoff" placeholder="Enter right cutoff frequency in MHz" min="1400" max="1850" style="float: right" required>
+    <label for="rightCutoff" style="float: left; width: 30%">Правая частота среза (МГц):</label>
+    <input type="number" id="rightCutoff" name="rightCutoff" placeholder="Введите правую частоту среза в МГц" min="640" max="870" style="float: right" required>
     <br><br><br>
     <div id="centerFrequency" style="text-align: center"></div> <!-- Placeholder for center frequency display -->
     <br>
@@ -139,11 +140,11 @@
 
     <br>
     <br>
-    <input type="submit" value="Send">
+    <input type="submit" value="Отправить">
     <br>
-    <a href="/disconnect">Disconnect</a>
+    <a href="/disconnect">Отключение</a>
     <br>
-    <a href="/debug">Debug Page</a>
+    <a href="/debug">Отладка</a>
     <br>
 
 </form>
@@ -156,10 +157,10 @@
     <div class="center-label" id="centerFrequencyLabel"></div> <!-- Label for center frequency -->
 </div>
 <div class="instruction">
-    <h3>Instructions:</h3>
-    <p>Enter the left cutoff frequency in the range from 1050 to 1500 MHz.</p>
-    <p>Enter the right cutoff frequency in the range from 1400 to 1850 MHz.</p>
-    <p>The center frequency will be calculated as the average of the left and right cutoff frequencies.</p>
+    <h3>Инструкции:</h3>
+    <p>Введите левую частоту среза в диапазоне от 570 до 800 МГц.</p>
+    <p>Введите нужную частоту среза в диапазоне от 640 до 870 МГц.</p>
+    <p>Центральная частота будет рассчитываться как среднее значение левой и правой частот среза.</p>
 </div>
 
 <script>

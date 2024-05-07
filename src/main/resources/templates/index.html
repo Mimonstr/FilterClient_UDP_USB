@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Connection Setup</title>
+    <title>Настройка подключения</title>
 
     <style>
         body
@@ -84,8 +84,8 @@
 </head>
 <body>
 <h1>
-        <span class="left">My PC IP Configuration</span>
-        <span class="right">Enter Server IP Address and port</span>
+        <span class="left">IP-конфигурация моего компьютера</span>
+        <span class="right">Введите IP-адрес и порт устройства</span>
 </h1>
 <br><br><br>
 <div class="info">
@@ -100,16 +100,16 @@
         </li>
     </ul>
 </div>
-<form action="/connect" method="post" th:object = "${UDPClientSocketHandler}">
-    <input type="text" id="ipAddress" name="ipAddress" placeholder="Server IP Address" style="text-align: center" required
+<form id="connectForm" action="/connect" method="post" th:object = "${UDPClientSocketHandler}">
+    <input type="text" id="ipAddress" name="ipAddress" placeholder="IP-адрес устройства" style="text-align: center" required
            pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
            title="Example Mask: 255.0.0.0  Diapason 0..255"
            oninput="checkIPAddress(this)"
            th:value="${ipAddress}"><br>
 
-    <input type="text" name="port" placeholder="Server Port" value="10001" readonly style="text-align: center"><br>
+    <input type="text" name="port" placeholder="Порт устройства" value="10001" readonly style="text-align: center"><br>
 
-    <input type="submit" value="Connect">
+    <input type="submit" value="Подключить" onclick="connectToDevice()">
 
     <input type="button" value="Сохранить в файл" onclick="saveToFile()">
 
@@ -131,6 +131,34 @@
             alert("Этот IP-адрес недоступен для ввода!");
             input.value = "";
         }
+    }
+
+    function connectToDevice() {
+        var ipAddress = document.getElementById('ipAddress').value;
+        var form = document.getElementById('connectForm');
+
+        fetch(form.action,
+            {
+            method: 'POST',
+            body: new URLSearchParams(new FormData(form))
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ошибка соединения');
+                }
+                return response.text();
+            })
+            .then(data => {
+                if (data === 'error') {
+                    alert('Ошибка соединения');
+                } else {
+                    window.location.href = data;
+                }
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+
     }
 
     function saveToFile()
