@@ -1,6 +1,7 @@
 package gp.nimfa.clientserver.UDB_Web.controllers;
 
 import gp.nimfa.clientserver.UDB_Web.UDPClientSocketHandler;
+import gp.nimfa.clientserver.UDB_Web.model.IPConfigData;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,21 +17,22 @@ import java.util.List;
 public class ConnectionController
 {
     private final UDPClientSocketHandler clientSocketHandler = new UDPClientSocketHandler();
+    private final IPConfigData ipConfigData = new IPConfigData();
 
     private static final String CONFIG_FILE_PATH = "src/main/resources/config.ini";
     @GetMapping("/")
     public String index(Model model)
     {
-        List<String> ipAddresses = UDPClientSocketHandler.getAllIPAddresses();
+        List<String> ipAddresses = ipConfigData.getAllIPAddresses();
         model.addAttribute("ipAddresses", ipAddresses);
 
-        List<String> macAddresses = UDPClientSocketHandler.getAllMACAddresses();
+        List<String> macAddresses = ipConfigData.getAllMACAddresses();
         model.addAttribute("macAddresses", macAddresses);
 
-        List<String> macDescriptions = UDPClientSocketHandler.getAllMACDescriptions();
+        List<String> macDescriptions = ipConfigData.getAllMACDescriptions();
         model.addAttribute("macDescriptions", macDescriptions);
 
-        String ipAddress = UDPClientSocketHandler.loadIpAddress();
+        String ipAddress = ipConfigData.loadIpAddress();
         model.addAttribute("ipAddress", ipAddress);
 
 

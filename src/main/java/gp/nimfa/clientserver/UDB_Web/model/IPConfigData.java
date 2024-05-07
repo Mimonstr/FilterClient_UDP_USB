@@ -1,60 +1,137 @@
 package gp.nimfa.clientserver.UDB_Web.model;
 
+import gp.nimfa.clientserver.UDB_Web.UDPClientSocketHandler;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class IPConfigData
 {
-    private String ipAddress;
-    private String subnetMask;
-    private String description;
-    private String macAddress;
-
-    public IPConfigData() {}
-
-    public IPConfigData(String ipAddress, String subnetMask, String description, String macAddress)
+    public static List<String> getAllIPAddresses()
     {
-        this.ipAddress = ipAddress;
-        this.subnetMask = subnetMask;
-        this.description = description;
-        this.macAddress = macAddress;
+        List<String> ipAddresses = new ArrayList<>();
+        try
+        {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements())
+            {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                if (networkInterface.isUp() && !networkInterface.isLoopback())
+                {
+                    Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                    while (addresses.hasMoreElements())
+                    {
+                        InetAddress address = addresses.nextElement();
+                        if (address instanceof Inet4Address)
+                        {
+                            ipAddresses.add(address.getHostAddress());
+                        }
+                    }
+                }
+            }
+        } catch (SocketException e)
+        {
+            e.printStackTrace();
+        }
+        return ipAddresses;
     }
 
-    public String getIpAddress()
+    //Получаем список всех mac-адресов
+    public static List<String> getAllMACAddresses()
     {
-        return ipAddress;
+        List<String> macAddresses = new ArrayList<>();
+        try
+        {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements())
+            {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                byte[] mac = networkInterface.getHardwareAddress();
+                if (mac != null)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < mac.length; i++)
+                    {
+                        sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+                    }
+                    macAddresses.add(sb.toString());
+                }
+            }
+        }
+        catch (SocketException e)
+        {
+            e.printStackTrace();
+        }
+        return macAddresses;
     }
 
-    public void setIpAddress(String ipAddress)
+    public static List<String> getAllMACDescriptions()
     {
-        this.ipAddress = ipAddress;
+        List<String> descriptions = new ArrayList<>();
+        try
+        {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements())
+            {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                byte[] mac = networkInterface.getHardwareAddress();
+                if (mac != null)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < mac.length; i++)
+                    {
+                        sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+                    }
+                    String description = networkInterface.getDisplayName(); // Описание интерфейса
+                    descriptions.add(description);
+                }
+            }
+        }
+        catch (SocketException e)
+        {
+            e.printStackTrace();
+        }
+        return descriptions;
     }
 
-    public String getSubnetMask()
+    public static String loadIpAddress()
     {
-        return subnetMask;
-    }
+        try (InputStream inputStream = UDPClientSocketHandler.class.getClassLoader().getResourceAsStream("config.ini");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream)))
+        {
+            String line;
+            String ipAddress = null;
 
-    public void setSubnetMask(String subnetMask)
-    {
-        this.subnetMask = subnetMask;
-    }
+            // Чтение файла построчно
+            while ((line = reader.readLine()) != null)
+            {
+                // Поиск строки, содержащей IP-адрес
+                Pattern pattern = Pattern.compile("ip-адрес:\\s*(\\S+)");
+                Matcher matcher = pattern.matcher(line);
+                if (matcher.find())
+                {
+                    ipAddress = matcher.group(1);
+                    break; // Выходим из цикла, если нашли IP-адрес
+                }
+            }
 
-    public String getDescription()
-    {
-        return description;
-    }
+            return ipAddress;
 
-    public void setDescription(String description)
-    {
-        this.description = description;
-    }
-
-    public String getMacAddress()
-    {
-        return macAddress;
-    }
-
-    public void setMacAddress(String macAddress)
-    {
-        this.macAddress = macAddress;
+        }
+        catch (Exception e)
+        {
+            return "";
+        }
     }
 }
 
