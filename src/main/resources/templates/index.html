@@ -138,7 +138,7 @@
         var ipAddress = document.getElementsByName("ipAddress")[0].value;
         var filename = prompt("Введите имя файла:", "ip_address.txt"); // Запрашиваем имя файла у пользователя
         if (filename === null) return; // Если пользователь отменил ввод, просто выходим из функции
-        var blob = new Blob([ipAddress], { type: "text/plain;charset=utf-8" });
+        var blob = new Blob(["ip-адрес: " + ipAddress], { type: "text/plain;charset=utf-8" });
         if (window.navigator.msSaveOrOpenBlob)
         {
             window.navigator.msSaveOrOpenBlob(blob, filename);
@@ -152,8 +152,6 @@
         }
     }
 
-
-
     function loadFromFile()
     {
         const fileInput = document.getElementById('fileInput');
@@ -164,8 +162,16 @@
 
             reader.onload = function(e)
             {
-                const ipAddress = e.target.result.trim();
-                document.getElementById('ipAddress').value = ipAddress;
+                const content = e.target.result;
+                const ipAddress = extractIPAddress(content);
+                if (ipAddress)
+                {
+                    document.getElementById('ipAddress').value = ipAddress;
+                }
+                else
+                {
+                    handleFileError("IP-адрес не найден в файле.\nФайл должен содержать строку: \"ip-адрес: \"");
+                }
             };
 
             reader.readAsText(file);
@@ -173,6 +179,34 @@
 
         fileInput.click(); // Вызов окна выбора файла
     }
+
+    function handleFileError(errorMessage)
+    {
+        alert(errorMessage);
+        return;
+    }
+
+
+
+    function extractIPAddress(content)
+    {
+        // Поиск IP-адреса с использованием строки "ip-адрес: "
+        const lines = content.split('\n');
+        const ipLine = lines.find(line => line.includes('ip-адрес: '));
+        if (ipLine) {
+            return ipLine.split(':')[1].trim(); // Возвращаем часть строки после ":"
+        }
+
+        // Если IP-адрес не найден с использованием строки "ip-адрес: ", ищем с помощью регулярного выражения
+        const ipRegex = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/g;
+        const matches = content.match(ipRegex);
+        if (matches && matches.length > 0) {
+            return matches[0]; // Возвращаем первый найденный IP-адрес
+        } else {
+            return null; // Если IP-адрес не найден, возвращаем null
+        }
+    }
+
 
 </script>
 
