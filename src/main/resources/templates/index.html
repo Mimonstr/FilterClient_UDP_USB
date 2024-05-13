@@ -19,7 +19,7 @@
         .right
         {
             float: right;
-            margin-right: 200px;
+            margin-right: 15%;
         }
         h2
         {
@@ -30,13 +30,13 @@
 
         form
         {
-            width: 300px;
+            width: 20%;
             background-color: #fff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             float: right;
-            margin-right: 300px;
+            margin-right: 18%;
         }
 
         .info
@@ -47,6 +47,7 @@
             border-radius: 5px;
             display: inline-block;
             width: 40%;
+            float: left;
         }
         input[type="text"], input[type="submit"]
         {
@@ -85,7 +86,7 @@
 <body>
 <h1>
         <span class="left">IP-конфигурация моего компьютера</span>
-        <span class="right">Введите IP-адрес и порт устройства</span>
+        <span class="right">Выберите тип соединения</span>
 </h1>
 <br><br><br>
 <div class="info">
@@ -100,27 +101,95 @@
         </li>
     </ul>
 </div>
-<form id="connectForm" action="/connect" method="post" th:object = "${UDPClientSocketHandler}">
-    <input type="text" id="ipAddress" name="ipAddress" placeholder="IP-адрес устройства" style="text-align: center" required
-           pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-           title="Example Mask: 255.0.0.0  Diapason 0..255"
-           oninput="checkIPAddress(this)"
-           th:value="${ipAddress}"><br>
 
-    <input type="text" name="port" placeholder="Порт устройства" value="10001" readonly style="text-align: center"><br>
 
-    <input type="submit" value="Подключить" onclick="connectToDevice()">
+<!--<form id="connectForm" action="/connect" method="post" th:object = "${UDPClientSocketHandler}">-->
 
-    <input type="button" value="Сохранить в файл" onclick="saveToFile()">
+<!--    <input type="text" id="ipAddress" name="ipAddress" placeholder="IP-адрес устройства" style="text-align: center" required-->
+<!--           pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"-->
+<!--           title="Example Mask: 255.0.0.0  Diapason 0..255"-->
+<!--           oninput="checkIPAddress(this)"-->
+<!--           th:value="${ipAddress}"><br>-->
 
-    <input type="file" id="fileInput" style="display: none;"> <!-- Кнопка загрузки файла, скрытая -->
-    <button type="button" onclick="loadFromFile()">Загрузить из файла</button>
+<!--    <input type="text" name="port" placeholder="Порт устройства" value="10001" readonly style="text-align: center"><br>-->
 
-</form>
+<!--    <input type="submit" value="Подключить" onclick="connectToDevice()">-->
+
+<!--    <input type="button" value="Сохранить в файл" onclick="saveToFile()">-->
+
+<!--    <input type="file" id="fileInput" style="display: none;"> &lt;!&ndash; Кнопка загрузки файла, скрытая &ndash;&gt;-->
+<!--    <button type="button" onclick="loadFromFile()">Загрузить из файла</button>-->
+
+<!--</form>-->
+
+<h1 style="float: right; margin-right: 20%">
+    <input type="radio" id="usbConnection" name="connectionType" value="usb" onclick="showForm('usbForm')" checked>
+    <label for="usbConnection">USB Connection</label>
+    <br><br>
+    <input type="radio" id="udpConnection" name="connectionType" value="udp" onclick="showForm('udpForm')">
+    <label for="udpConnection">UDP Connection</label>
+</h1>
+
+
+<!--Если нужно убрать форму usb исправить стиль display на none -->
+<!-- Форма для USB соединения -->
+<div id="usbForm" style="display: block;">
+    <form id="usbConnectForm" action="/connectUsb" method="post">
+        <input type="text" id="usbPortName" name="usbPortName" placeholder="Port Name">
+        <!-- Другие поля, необходимые для USB соединения -->
+        <input type="submit" value="Подключить по USB">
+    </form>
+</div>
+
+<div id="udpForm" style="display: none;">
+    <form id="udpConnectForm" action="/connectUDP" method="post" th:object = "${UDPClientSocketHandler}">
+
+        <input type="text" id="ipAddress" name="ipAddress" placeholder="IP-адрес устройства" style="text-align: center" required
+               pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+               title="Example Mask: 255.0.0.0  Diapason 0..255"
+               oninput="checkIPAddress(this)"
+               th:value="${ipAddress}"><br>
+
+        <input type="text" name="port" placeholder="Порт устройства" value="10001" readonly style="text-align: center"><br>
+
+        <input type="submit" value="Подключить по UDP" onclick="connectToDeviceUDP()">
+
+        <input type="button" value="Сохранить в файл" onclick="saveToFile()">
+
+        <input type="file" id="fileInput" style="display: none;"> <!-- Кнопка загрузки файла, скрытая -->
+        <button type="button" onclick="loadFromFile()">Загрузить из файла</button>
+
+    </form>
+</div>
+
 
 
 
 <script th:inline="javascript">
+
+
+    function showForm(formId)
+    {
+        var udpForm = document.getElementById('udpForm');
+        var usbForm = document.getElementById('usbForm');
+
+        if (formId === 'usbForm')
+        {
+            udpForm.style.display = 'none';
+            usbForm.style.display = 'block';
+        }
+        else if (formId === 'udpForm')
+        {
+            udpForm.style.display = 'block';
+            usbForm.style.display = 'none';
+        }
+    }
+
+    // Показать форму USB по умолчанию при загрузке страницы
+    // window.onload = function()
+    // {
+    //     showForm('usbForm');
+    // };
 
     var ipAddressList = [[${ipAddresses}]];
     function checkIPAddress(input)
@@ -133,9 +202,9 @@
         }
     }
 
-    function connectToDevice() {
+    function connectToDeviceUDP() {
         var ipAddress = document.getElementById('ipAddress').value;
-        var form = document.getElementById('connectForm');
+        var form = document.getElementById('udpConnectForm');
 
         fetch(form.action,
             {

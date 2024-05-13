@@ -1,6 +1,6 @@
 package gp.nimfa.clientserver.UDB_Web.controllers;
 
-import gp.nimfa.clientserver.UDB_Web.UDPClientSocketHandler;
+import gp.nimfa.clientserver.UDB_Web.model.UDPClientSocketHandler;
 import gp.nimfa.clientserver.UDB_Web.model.IPConfigData;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -11,12 +11,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-
-
 @Controller
 public class ConnectionController
 {
-    private final UDPClientSocketHandler clientSocketHandler = new UDPClientSocketHandler();
+    private final UDPClientSocketHandler udpClientSocketHandler = new UDPClientSocketHandler();
     private final IPConfigData ipConfigData = new IPConfigData();
 
     private static final String CONFIG_FILE_PATH = "src/main/resources/config.ini";
@@ -54,12 +52,12 @@ public class ConnectionController
         return "redirect:/";
     }
 
-    @PostMapping("/connect")
-    public String connect(@RequestParam("ipAddress") String ipAddress, @RequestParam("port") int port, HttpSession session)
+    @PostMapping("/connectUDP")
+    public String connectUDP(@RequestParam("ipAddress") String ipAddress, @RequestParam("port") int port, HttpSession session)
     {
         try
         {
-            if(clientSocketHandler.connect(ipAddress, port))
+            if(udpClientSocketHandler.connect(ipAddress, port))
             {
                 session.setAttribute("ipAddress", ipAddress);
                 session.setAttribute("port", port);
@@ -90,9 +88,9 @@ public class ConnectionController
             // Process the data or send it to the clientSocketHandler
             String ipAddress = (String) session.getAttribute("ipAddress");
 
-            if(clientSocketHandler.isConnected(ipAddress))
+            if(udpClientSocketHandler.isConnected(ipAddress))
             {
-                clientSocketHandler.sendData(leftCutoff, rightCutoff);
+                udpClientSocketHandler.sendData(leftCutoff, rightCutoff);
                 return "redirect:/receivedData";
             }
             else return "error";
@@ -120,9 +118,9 @@ public class ConnectionController
         try
         {
             String ipAddress = (String) session.getAttribute("ipAddress");
-            if(clientSocketHandler.isConnected(ipAddress))
+            if(udpClientSocketHandler.isConnected(ipAddress))
             {
-                clientSocketHandler.sendData(dacA, dacB, dacC, dacD);
+                udpClientSocketHandler.sendData(dacA, dacB, dacC, dacD);
                 return "redirect:/receivedData";
             }
             else return "error";
@@ -136,7 +134,7 @@ public class ConnectionController
     @GetMapping("/disconnect")
     public String disconnect()
     {
-        clientSocketHandler.disconnect();
+        udpClientSocketHandler.disconnect();
         return "redirect:/";
     }
 }

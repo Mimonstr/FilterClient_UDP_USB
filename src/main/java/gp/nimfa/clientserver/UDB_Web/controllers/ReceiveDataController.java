@@ -1,6 +1,6 @@
 package gp.nimfa.clientserver.UDB_Web.controllers;
 
-import gp.nimfa.clientserver.UDB_Web.UDPClientSocketHandler;
+import gp.nimfa.clientserver.UDB_Web.model.UDPClientSocketHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

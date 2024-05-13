@@ -1,4 +1,4 @@
-package gp.nimfa.clientserver.UDB_Web;
+package gp.nimfa.clientserver.UDB_Web.model;
 
 import gp.nimfa.clientserver.UDB_Web.model.Message;
 import org.springframework.stereotype.Component;

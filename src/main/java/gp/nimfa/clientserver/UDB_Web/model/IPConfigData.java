@@ -1,7 +1,5 @@
 package gp.nimfa.clientserver.UDB_Web.model;
 
-import gp.nimfa.clientserver.UDB_Web.UDPClientSocketHandler;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
