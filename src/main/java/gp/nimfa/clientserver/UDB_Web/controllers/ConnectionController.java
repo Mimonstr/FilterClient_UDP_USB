@@ -2,6 +2,7 @@ package gp.nimfa.clientserver.UDB_Web.controllers;
 
 import gp.nimfa.clientserver.UDB_Web.model.UDPClientSocketHandler;
 import gp.nimfa.clientserver.UDB_Web.model.IPConfigData;
+import gp.nimfa.clientserver.UDB_Web.model.USBClientSocketHandler;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +16,11 @@ import java.util.List;
 public class ConnectionController
 {
     private final UDPClientSocketHandler udpClientSocketHandler = new UDPClientSocketHandler();
+    private final USBClientSocketHandler usbClientSocketHandler = new USBClientSocketHandler();
+
+    private static boolean USBConnect = false;
+    private static boolean UDPConnect = false;
+
     private final IPConfigData ipConfigData = new IPConfigData();
 
     private static final String CONFIG_FILE_PATH = "src/main/resources/config.ini";
@@ -33,6 +39,8 @@ public class ConnectionController
         String ipAddress = ipConfigData.loadIpAddress();
         model.addAttribute("ipAddress", ipAddress);
 
+        List<String> availablePorts = List.of(USBClientSocketHandler.getAvailableSerialPorts()); // Метод, который возвращает список доступных портов
+        model.addAttribute("availablePorts", availablePorts);
 
         // Возвращаем имя представления (HTML-страницы)
         return "index";
@@ -61,6 +69,7 @@ public class ConnectionController
             {
                 session.setAttribute("ipAddress", ipAddress);
                 session.setAttribute("port", port);
+                UDPConnect = true;
                 return "redirect:/sendData";
             }
             else return "redirect:/";
@@ -71,6 +80,40 @@ public class ConnectionController
             return "error";
         }
     }
+
+    @PostMapping("/connectUSB")
+    public String connectUSB(@RequestParam("ComPort") String comPort, HttpSession session)
+    {
+
+        try
+        {
+            usbClientSocketHandler.connect(comPort);
+            session.setAttribute("comPort", comPort);
+            USBConnect = true;
+            return "redirect:/sendData";
+        }
+        catch (Exception e)
+        {
+            return "error";
+        }
+    }
+
+//    @PostMapping("/connectUSB")
+//    public String connectUSB(@RequestParam("ComPort") String comPort, HttpSession session)
+//    {
+//
+//        try
+//        {
+//            usbClientSocketHandler.connect(comPort);
+//            session.setAttribute("comPort", comPort);
+//            USBConnect = true;
+//            return "redirect:/sendData";
+//        }
+//        catch (Exception e)
+//        {
+//            return "error";
+//        }
+//    }
 
     @GetMapping("/sendData")
     public String sendDataForm()
@@ -85,21 +128,36 @@ public class ConnectionController
     {
         try
         {
-            // Process the data or send it to the clientSocketHandler
-            String ipAddress = (String) session.getAttribute("ipAddress");
-
-            if(udpClientSocketHandler.isConnected(ipAddress))
+            if(UDPConnect)
             {
-                udpClientSocketHandler.sendData(leftCutoff, rightCutoff);
-                return "redirect:/receivedData";
+                String ipAddress = (String) session.getAttribute("ipAddress");
+
+                if (udpClientSocketHandler.isConnected(ipAddress))
+                {
+                    udpClientSocketHandler.sendData(leftCutoff, rightCutoff);
+                    return "redirect:/receivedData";
+                }
+                else return "error";
             }
-            else return "error";
+            else if(USBConnect)
+            {
+                String comPort = (String) session.getAttribute("comPort");
+                //if(usbClientSocketHandler.pingDevice(comPort))
+                if(usbClientSocketHandler.isConnected())
+                {
+                    //Отправка данных
+                    usbClientSocketHandler.sendData(leftCutoff, rightCutoff);
+                    return "redirect:/receivedData";
+                }
+                else return "error";
+            }
         }
         catch (Exception e)
         {
             e.printStackTrace();
             return "error";
         }
+        return "error";
     }
 
 
@@ -134,7 +192,17 @@ public class ConnectionController
     @GetMapping("/disconnect")
     public String disconnect()
     {
-        udpClientSocketHandler.disconnect();
+        if(UDPConnect)
+        {
+            udpClientSocketHandler.disconnect();
+            UDPConnect = false;
+        }
+        else if (USBConnect)
+        {
+            usbClientSocketHandler.disconnect();
+            USBConnect = false;
+        }
+
         return "redirect:/";
     }
 }

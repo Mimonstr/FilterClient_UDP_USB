@@ -103,25 +103,6 @@
 </div>
 
 
-<!--<form id="connectForm" action="/connect" method="post" th:object = "${UDPClientSocketHandler}">-->
-
-<!--    <input type="text" id="ipAddress" name="ipAddress" placeholder="IP-адрес устройства" style="text-align: center" required-->
-<!--           pattern="^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"-->
-<!--           title="Example Mask: 255.0.0.0  Diapason 0..255"-->
-<!--           oninput="checkIPAddress(this)"-->
-<!--           th:value="${ipAddress}"><br>-->
-
-<!--    <input type="text" name="port" placeholder="Порт устройства" value="10001" readonly style="text-align: center"><br>-->
-
-<!--    <input type="submit" value="Подключить" onclick="connectToDevice()">-->
-
-<!--    <input type="button" value="Сохранить в файл" onclick="saveToFile()">-->
-
-<!--    <input type="file" id="fileInput" style="display: none;"> &lt;!&ndash; Кнопка загрузки файла, скрытая &ndash;&gt;-->
-<!--    <button type="button" onclick="loadFromFile()">Загрузить из файла</button>-->
-
-<!--</form>-->
-
 <h1 style="float: right; margin-right: 20%">
     <input type="radio" id="usbConnection" name="connectionType" value="usb" onclick="showForm('usbForm')" checked>
     <label for="usbConnection">USB Connection</label>
@@ -130,18 +111,39 @@
     <label for="udpConnection">UDP Connection</label>
 </h1>
 
-
+<!--Представление выпадающим списком-->
 <!--Если нужно убрать форму usb исправить стиль display на none -->
 <!-- Форма для USB соединения -->
+<!--<div id="usbForm" style="display: block;" onsubmit="sendConnectionUSB()">-->
+<!--    <form id="usbConnectForm" action="/connectUSB" method="post" th:object="${USBClientSocketHandler}">-->
+<!--        <select id="ComPort" name="ComPort">-->
+<!--            <option value="">Выберите COM порт</option>-->
+<!--            <th:block th:each="port : ${availablePorts}">-->
+<!--                <option th:value="${port}" th:text="${port}"></option>-->
+<!--            </th:block>-->
+<!--        </select>-->
+<!--        <br><br>-->
+<!--        <input type="submit" value="Подключить по USB">-->
+<!--    </form>-->
+<!--</div>-->
+
+
+<!--Представление через выбор списком с помощью галочек-->
+
 <div id="usbForm" style="display: block;">
-    <form id="usbConnectForm" action="/connectUsb" method="post">
-        <input type="text" id="usbPortName" name="usbPortName" placeholder="Port Name">
-        <!-- Другие поля, необходимые для USB соединения -->
+    <form id="usbConnectForm" action="/connectUSB" method="post" th:object="${USBClientSocketHandler}">
+        <th:block th:each="port : ${availablePorts}">
+            <input type="radio" th:id="'ComPort_' + ${port}" th:name="ComPort" th:value="${port}">
+            <label th:for="'ComPort_' + ${port}" th:text="${port}"></label><br>
+        </th:block>
         <input type="submit" value="Подключить по USB">
     </form>
 </div>
 
-<div id="udpForm" style="display: none;">
+
+
+
+<div id="udpForm" style="display: none;" onsubmit="sendConnectionUDP()">
     <form id="udpConnectForm" action="/connectUDP" method="post" th:object = "${UDPClientSocketHandler}">
 
         <input type="text" id="ipAddress" name="ipAddress" placeholder="IP-адрес устройства" style="text-align: center" required
@@ -167,6 +169,17 @@
 
 <script th:inline="javascript">
 
+    // Функция для отправки соединения
+    function sendConnectionUDP(event)
+    {
+        event.preventDefault(); // Останавливаем действие по умолчанию, чтобы форма не отправлялась снова
+        document.getElementById("udpConnectForm").submit(); // Отправляем форму
+    }
+    function sendConnectionUSB(event)
+    {
+        event.preventDefault(); // Останавливаем действие по умолчанию, чтобы форма не отправлялась снова
+        document.getElementById("usbConnectForm").submit(); // Отправляем форму
+    }
 
     function showForm(formId)
     {

@@ -121,7 +121,7 @@
 </head>
 <body>
 <h2>Настройки Фильтра</h2>
-<form action="/sendData" method="post">
+<form id="sendForm" action="/sendData" method="post" onsubmit="sendData()">
     <label for="leftCutoff" style="float: left; width: 30%">Левая частота среза (МГц):</label>
     <input type="number" id="leftCutoff" name="leftCutoff" placeholder="Введите левую частоту среза в МГц" min="570" max="800" style="float: left" required>
     <br><br><br>
@@ -164,6 +164,14 @@
 </div>
 
 <script>
+
+    // Функция для отправки данных
+    function sendData(event)
+    {
+        event.preventDefault(); // Останавливаем действие по умолчанию, чтобы форма не отправлялась снова
+        document.getElementById("sendForm").submit(); // Отправляем форму
+    }
+
     // Calculate and display center frequency
     var leftCutoffInput = document.getElementById('leftCutoff');
     var rightCutoffInput = document.getElementById('rightCutoff');

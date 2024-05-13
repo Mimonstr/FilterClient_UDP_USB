@@ -11,7 +11,6 @@ public class Message
 
         double U1_pol = a1 * Math.exp(b1 * leftFreq) + c1 * Math.exp(d1 * leftFreq);
         U1_pol = Math.round(U1_pol * 10000.0) / 10000.0;
-        System.out.println("A = " + U1_pol);
 
         double a2 = 0.006056;
         double b2 = 0.003645;
@@ -20,7 +19,6 @@ public class Message
 
         double U2_pol = a2 * Math.exp(b2 * rightFreq) + c2 * Math.exp(d2 * rightFreq);
         U2_pol = Math.round(U2_pol * 10000.0) / 10000.0;
-        System.out.println("B = " + U2_pol);
 
         double DA = 0;
         double DB = 0;
@@ -53,8 +51,6 @@ public class Message
 
         if (U2_pol < 0) U2_pol = 0;
         //numericUpDown_DAC_chB.Value = Convert.ToDecimal(U2_pol * 1000);
-        System.out.println("VoutA = " + VoutA);
-        System.out.println("VoutB = " + VoutB);
         int dacbHigh = (dacb >> 8);
         int dacbLow = ((dacb << 24) >> 24);
         byte dacb_High = (byte) (dacbHigh & 0xFF);

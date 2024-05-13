@@ -4,6 +4,10 @@ package gp.nimfa.clientserver.UDB_Web.model;
 import jssc.SerialPort;
 
 import jssc.SerialPortException;
+import jssc.SerialPortList;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
 
 public class USBClientSocketHandler
 {
@@ -48,6 +52,18 @@ public class USBClientSocketHandler
     }
 
     // Метод для отправки данных по COM-порту
+    public void sendData(int leftFreq, int rightFreq) throws IOException
+    {
+        if (serialPort != null && isConnected)
+        {
+            byte[] sendData = Message.messagePackaging(leftFreq, rightFreq);
+            try
+            {
+                serialPort.writeBytes(sendData);
+            }
+            catch (SerialPortException e) {}
+        }
+    }
     public void sendData(String data)
     {
         try
@@ -120,5 +136,32 @@ public class USBClientSocketHandler
                 e.printStackTrace();
             }
         }
+    }
+
+    public static String[] getAllSerialPorts()
+    {
+        return SerialPortList.getPortNames();
+    }
+    public static String[] getAvailableSerialPorts()
+    {
+        String[] allPorts = SerialPortList.getPortNames();
+        String[] availablePorts = new String[allPorts.length];
+        int count = 0;
+
+        for (String portName : allPorts) {
+            SerialPort port = new SerialPort(portName);
+            try {
+                port.openPort();
+                port.closePort();
+                availablePorts[count++] = portName;
+            } catch (SerialPortException e) {
+                // Порт занят или не доступен
+            }
+        }
+
+        // Создаем новый массив, чтобы избавиться от нулевых элементов (пустых слотов)
+        String[] result = new String[count];
+        System.arraycopy(availablePorts, 0, result, 0, count);
+        return result;
     }
 }

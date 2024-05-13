@@ -88,10 +88,7 @@ public class UDPClientSocketHandler
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, serverPort);
             socket.send(sendPacket);
         }
-        else
-        {
-            System.out.println("Error");
-        }
+
     }
 
     //Отправка напряжений на каждый канал
@@ -102,10 +99,6 @@ public class UDPClientSocketHandler
             byte[] sendData = Message.messageVolt(dacA, dacB, dacC, dacD);
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, serverPort);
             socket.send(sendPacket);
-        }
-        else
-        {
-            System.out.println("Error");
         }
     }
 

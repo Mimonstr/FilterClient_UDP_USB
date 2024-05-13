@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
+
 @SpringBootApplication
 public class ClientServerApplication extends SpringBootServletInitializer
 {
@@ -18,9 +19,19 @@ public class ClientServerApplication extends SpringBootServletInitializer
     {
         SpringApplication.run(ClientServerApplication.class, args);
 
-        USBClientSocketHandler clientHandler = new USBClientSocketHandler();
+        String[] ports = USBClientSocketHandler.getAvailableSerialPorts();
+        if (ports.length == 0) {
+            System.out.println("No serial ports found.");
+        } else {
+            System.out.println("Available serial ports:");
+            for (String port : ports) {
+                System.out.println(port);
+            }
+        }
 
-        String portName = "COM1"; // Укажите соответствующий порт
+        //USBClientSocketHandler clientHandler = new USBClientSocketHandler();
+
+        //String portName = "COM1"; // Укажите соответствующий порт
 
 //        boolean isDeviceAvailable = clientHandler.pingDevice(portName);
 //        if (isDeviceAvailable) {
