@@ -67,7 +67,7 @@
 </head>
 <body>
 <h2>Filter Settings</h2>
-<form action="/debug" method="post">
+<form id ="debugForm" action="/debug" method="post" onsubmit="return sendData()">
 <div class="channel-inputs">
     <h3>Input Voltages for Each Channel</h3>
     <div class="channel-input">
@@ -87,8 +87,26 @@
         <input type="number" id="dacD" name="dacD" min="0" max="4000" step="1" required>
     </div>
     <input type="submit" value="Send Voltages" style="width: 50%">
+    <br>
+    <a href="/sendData" style="width: 50%">Return to form</a>
+
+    <!-- Место для отображения сообщений -->
+    <div th:if="${message}" class="success-message" th:text="${message}" style="color: #45a049"></div>
+    <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}" style="color: #f44336"></div>
+
 </div>
+
+
 </form>
 
+
+<script>
+    // Функция для отправки данных
+    function sendData(event)
+    {
+        event.preventDefault(); // Останавливаем действие по умолчанию, чтобы форма не отправлялась снова
+        document.getElementById("sendForm").submit(); // Отправляем форму
+    }
+</script>
 </body>
 </html>

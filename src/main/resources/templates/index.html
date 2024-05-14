@@ -114,31 +114,31 @@
 <!--Представление выпадающим списком-->
 <!--Если нужно убрать форму usb исправить стиль display на none -->
 <!-- Форма для USB соединения -->
-<!--<div id="usbForm" style="display: block;" onsubmit="sendConnectionUSB()">-->
-<!--    <form id="usbConnectForm" action="/connectUSB" method="post" th:object="${USBClientSocketHandler}">-->
-<!--        <select id="ComPort" name="ComPort">-->
-<!--            <option value="">Выберите COM порт</option>-->
-<!--            <th:block th:each="port : ${availablePorts}">-->
-<!--                <option th:value="${port}" th:text="${port}"></option>-->
-<!--            </th:block>-->
-<!--        </select>-->
-<!--        <br><br>-->
-<!--        <input type="submit" value="Подключить по USB">-->
-<!--    </form>-->
-<!--</div>-->
+<div id="usbForm" style="display: block;" onsubmit="sendConnectionUSB()">
+    <form id="usbConnectForm" action="/connectUSB" method="post" th:object="${USBClientSocketHandler}" onsubmit="return checkPortSelection1()">
+        <select id="ComPort" name="ComPort">
+            <option value="">Выберите COM порт</option>
+            <th:block th:each="port : ${availablePorts}">
+                <option th:value="${port}" th:text="${port}"></option>
+            </th:block>
+        </select>
+        <br><br>
+        <input type="submit" value="Подключить по USB">
+    </form>
+</div>
 
 
 <!--Представление через выбор списком с помощью галочек-->
 
-<div id="usbForm" style="display: block;">
-    <form id="usbConnectForm" action="/connectUSB" method="post" th:object="${USBClientSocketHandler}">
-        <th:block th:each="port : ${availablePorts}">
-            <input type="radio" th:id="'ComPort_' + ${port}" th:name="ComPort" th:value="${port}">
-            <label th:for="'ComPort_' + ${port}" th:text="${port}"></label><br>
-        </th:block>
-        <input type="submit" value="Подключить по USB">
-    </form>
-</div>
+<!--<div id="usbForm" style="display: block;" onsubmit="sendConnectionUSB()">-->
+<!--    <form id="usbConnectForm" action="/connectUSB" method="post" th:object="${USBClientSocketHandler}" onsubmit="return checkPortSelection2()">-->
+<!--        <th:block th:each="port : ${availablePorts}">-->
+<!--            <input type="radio" th:id="'ComPort_' + ${port}" th:name="ComPort" th:value="${port}">-->
+<!--            <label th:for="'ComPort_' + ${port}" th:text="${port}"></label><br>-->
+<!--        </th:block>-->
+<!--        <input type="submit" value="Подключить по USB">-->
+<!--    </form>-->
+<!--</div>-->
 
 
 
@@ -169,6 +169,36 @@
 
 <script th:inline="javascript">
 
+    function checkPortSelection1() {
+        var portSelected = document.getElementById("ComPort").value;
+        if (!portSelected) {
+            alert("Пожалуйста, выберите порт.");
+            return false; // Отменяет отправку формы
+        }
+        return true; // Продолжает отправку формы
+    }
+
+    //Проверка выбран ли порт
+    function checkPortSelection2()
+    {
+        var ports = document.getElementsByName("ComPort");
+        var portSelected = false;
+        for (var i = 0; i < ports.length; i++)
+        {
+            if (ports[i].checked)
+            {
+                portSelected = true;
+                break;
+            }
+        }
+        if (!portSelected)
+        {
+            alert("Пожалуйста, выберите порт.");
+            return false; // Отменяет отправку формы
+        }
+        return true; // Продолжает отправку формы
+    }
+
     // Функция для отправки соединения
     function sendConnectionUDP(event)
     {
@@ -197,12 +227,6 @@
             usbForm.style.display = 'none';
         }
     }
-
-    // Показать форму USB по умолчанию при загрузке страницы
-    // window.onload = function()
-    // {
-    //     showForm('usbForm');
-    // };
 
     var ipAddressList = [[${ipAddresses}]];
     function checkIPAddress(input)

@@ -1,13 +1,9 @@
 package gp.nimfa.clientserver.UDB_Web.model;
 
-
 import jssc.SerialPort;
-
 import jssc.SerialPortException;
 import jssc.SerialPortList;
-
 import java.io.IOException;
-import java.net.DatagramPacket;
 
 public class USBClientSocketHandler
 {
@@ -35,60 +31,35 @@ public class USBClientSocketHandler
         }
     }
 
-    public void disconnect()
+    public void disconnect() throws SerialPortException
     {
         if (serialPort != null && serialPort.isOpened())
         {
-            try
-            {
-                serialPort.closePort();
-                isConnected = false;
-            }
-            catch (SerialPortException e)
-            {
-                e.printStackTrace();
-            }
+            serialPort.closePort();
+            isConnected = false;
         }
     }
 
     // Метод для отправки данных по COM-порту
-    public void sendData(int leftFreq, int rightFreq) throws IOException
+    //Частоты
+    public void sendData(int leftFreq, int rightFreq) throws IOException, SerialPortException
     {
         if (serialPort != null && isConnected)
         {
             byte[] sendData = Message.messagePackaging(leftFreq, rightFreq);
-            try
-            {
-                serialPort.writeBytes(sendData);
-            }
-            catch (SerialPortException e) {}
+            serialPort.writeBytes(sendData);
         }
     }
-    public void sendData(String data)
+    //Debug
+    public void sendData(int dacA, int dacB, int dacC, int dacD) throws IOException, SerialPortException
     {
-        try
+        if (serialPort != null && isConnected)
         {
-            serialPort.writeBytes(data.getBytes());
-        }
-        catch (SerialPortException e)
-        {
-            e.printStackTrace();
+            byte[] sendData = Message.messageVolt(dacA, dacB, dacC, dacD);
+            serialPort.writeBytes(sendData);
         }
     }
 
-    // Метод для приема данных по COM-порту
-    public byte[] receiveData()
-    {
-        try
-        {
-            return serialPort.readBytes();
-        }
-        catch (SerialPortException e)
-        {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     public boolean isConnected()
     {

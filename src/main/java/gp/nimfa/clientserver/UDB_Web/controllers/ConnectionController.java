@@ -4,6 +4,7 @@ import gp.nimfa.clientserver.UDB_Web.model.UDPClientSocketHandler;
 import gp.nimfa.clientserver.UDB_Web.model.IPConfigData;
 import gp.nimfa.clientserver.UDB_Web.model.USBClientSocketHandler;
 import jakarta.servlet.http.HttpSession;
+import jssc.SerialPortException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -98,97 +99,99 @@ public class ConnectionController
         }
     }
 
-//    @PostMapping("/connectUSB")
-//    public String connectUSB(@RequestParam("ComPort") String comPort, HttpSession session)
-//    {
-//
-//        try
-//        {
-//            usbClientSocketHandler.connect(comPort);
-//            session.setAttribute("comPort", comPort);
-//            USBConnect = true;
-//            return "redirect:/sendData";
-//        }
-//        catch (Exception e)
-//        {
-//            return "error";
-//        }
-//    }
-
     @GetMapping("/sendData")
     public String sendDataForm()
     {
         return "sendData";
     }
 
+
     @PostMapping("/sendData")
-    public String sendData(@RequestParam("leftCutoff") int leftCutoff,
-                           @RequestParam("rightCutoff") int rightCutoff,
-                           HttpSession session)
-    {
-        try
-        {
-            if(UDPConnect)
+    public void sendData(@RequestParam("leftCutoff") int leftCutoff,
+                         @RequestParam("rightCutoff") int rightCutoff,
+                         HttpSession session,
+                         Model model) {
+        try {
+            if (UDPConnect)
             {
                 String ipAddress = (String) session.getAttribute("ipAddress");
 
                 if (udpClientSocketHandler.isConnected(ipAddress))
                 {
                     udpClientSocketHandler.sendData(leftCutoff, rightCutoff);
-                    return "redirect:/receivedData";
+                    model.addAttribute("message", "Данные успешно отправлены!");
                 }
-                else return "error";
+                else
+                {
+                    model.addAttribute("errorMessage", "Ошибка: устройство не подключено");
+                }
             }
-            else if(USBConnect)
+            else if (USBConnect)
             {
                 String comPort = (String) session.getAttribute("comPort");
-                //if(usbClientSocketHandler.pingDevice(comPort))
-                if(usbClientSocketHandler.isConnected())
+                if (usbClientSocketHandler.isConnected())
                 {
-                    //Отправка данных
+                    // Отправка данных
                     usbClientSocketHandler.sendData(leftCutoff, rightCutoff);
-                    return "redirect:/receivedData";
+                    model.addAttribute("message", "Данные успешно отправлены!");
                 }
-                else return "error";
+                else
+                {
+                    model.addAttribute("errorMessage", "Ошибка: устройство не подключено");
+                }
             }
         }
         catch (Exception e)
         {
-            e.printStackTrace();
-            return "error";
+            model.addAttribute("errorMessage", "Произошла ошибка при отправке данных");
         }
-        return "error";
     }
 
 
-    @GetMapping("/debug")
-    public String debug()
-    {
-        return "debug";
-    }
     @PostMapping("/debug")
-    public String sendVoltages(@RequestParam("dacA") int dacA,
+    public void sendVoltages(@RequestParam("dacA") int dacA,
                                @RequestParam("dacB") int dacB,
                                @RequestParam("dacC") int dacC,
                                @RequestParam("dacD") int dacD,
-                               HttpSession session)
+                               HttpSession session,
+                               Model model)
     {
         try
         {
-            String ipAddress = (String) session.getAttribute("ipAddress");
-            if(udpClientSocketHandler.isConnected(ipAddress))
+            if(UDPConnect)
             {
-                udpClientSocketHandler.sendData(dacA, dacB, dacC, dacD);
-                return "redirect:/receivedData";
+                String ipAddress = (String) session.getAttribute("ipAddress");
+                if (udpClientSocketHandler.isConnected(ipAddress))
+                {
+                    udpClientSocketHandler.sendData(dacA, dacB, dacC, dacD);
+                    model.addAttribute("message", "Данные успешно отправлены!");
+                }
+                else
+                {
+                    model.addAttribute("errorMessage", "Ошибка: устройство не подключено");
+                }
             }
-            else return "error";
+            else if (USBConnect)
+            {
+                String comPort = (String) session.getAttribute("comPort");
+                if(usbClientSocketHandler.isConnected())
+                {
+                    usbClientSocketHandler.sendData(dacA, dacB, dacC, dacD);
+                    model.addAttribute("message", "Данные успешно отправлены!");
+                }
+                else
+                {
+                    model.addAttribute("errorMessage", "Ошибка: устройство не подключено");
+                }
+            }
         }
         catch (Exception e)
         {
-            e.printStackTrace();
-            return "error";
+            model.addAttribute("errorMessage", "Произошла ошибка при отправке данных");
         }
     }
+
+
     @GetMapping("/disconnect")
     public String disconnect()
     {
@@ -199,11 +202,53 @@ public class ConnectionController
         }
         else if (USBConnect)
         {
-            usbClientSocketHandler.disconnect();
+            try
+            {
+                usbClientSocketHandler.disconnect();
+            }
+            catch (SerialPortException e)
+            {
+                return "error";
+            }
             USBConnect = false;
         }
 
         return "redirect:/";
+    }
+
+    @GetMapping("/login")
+    public String loginPage()
+    {
+        return "login"; // Возвращает страницу с формой входа
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestParam String password, HttpSession session)
+    {
+        // Проверка пароля (в данном случае пароль "password")
+        if ("password".equals(password))
+        {
+            session.setAttribute("loggedIn", true); // Устанавливаем флаг в сессии
+            return "redirect:/debug"; // Перенаправляем на страницу отладки
+        }
+        else
+        {
+            return "login"; // Если пароль неверный, снова отображаем страницу входа
+        }
+    }
+
+    @GetMapping("/debug")
+    public String debugPage(HttpSession session)
+    {
+        // Проверка наличия флага в сессии (пользователь должен быть авторизован)
+        if (session.getAttribute("loggedIn") != null)
+        {
+            return "debug"; // Возвращает страницу отладки
+        }
+        else
+        {
+            return "redirect:/login"; // Если пользователь не авторизован, перенаправляет на страницу входа
+        }
     }
 }
 

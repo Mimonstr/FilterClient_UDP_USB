@@ -116,12 +116,16 @@
             color: #4CAF50;
             display: none; /* Hide the center frequency label by default */
         }
+        .success-message {
+            display: block; /* Скрываем сообщение об успехе по умолчанию */
+        }
+
     </style>
 
 </head>
 <body>
 <h2>Настройки Фильтра</h2>
-<form id="sendForm" action="/sendData" method="post" onsubmit="sendData()">
+<form id="sendForm" action="/sendData" method="post" onsubmit="return sendData()">
     <label for="leftCutoff" style="float: left; width: 30%">Левая частота среза (МГц):</label>
     <input type="number" id="leftCutoff" name="leftCutoff" placeholder="Введите левую частоту среза в МГц" min="570" max="800" style="float: left" required>
     <br><br><br>
@@ -146,6 +150,9 @@
     <br>
     <a href="/debug">Отладка</a>
     <br>
+    <!-- Место для отображения сообщений -->
+    <div th:if="${message}" class="success-message" th:text="${message}" style="color: #45a049"></div>
+    <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}" style="color: #f44336"></div>
 
 </form>
 
@@ -165,12 +172,13 @@
 
 <script>
 
-    // Функция для отправки данных
+    //Функция для отправки данных
     function sendData(event)
     {
         event.preventDefault(); // Останавливаем действие по умолчанию, чтобы форма не отправлялась снова
         document.getElementById("sendForm").submit(); // Отправляем форму
     }
+
 
     // Calculate and display center frequency
     var leftCutoffInput = document.getElementById('leftCutoff');
